@@ -1,7 +1,7 @@
 Groestlcoin-seeder
 ==============
 
-Bitcoin-seeder is a crawler for the Groestlcoin network, which exposes a list
+Groestlcoin-seeder is a crawler for the Groestlcoin network, which exposes a list
 of reliable nodes via a built-in DNS server.
 
 Features:
