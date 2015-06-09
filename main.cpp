@@ -344,6 +344,9 @@ static const string testnet_seeds[] = {"groestlcoin.net", "groestlcoin.org, ""};
 static const string *seeds = mainnet_seeds;
 
 extern "C" void* ThreadSeeder(void*) {
+  if (!fTestNet){ 
+    db.Add(CService("toBeImplemented.onion", 1331), true);
+  } 
   do {
     for (int i=0; seeds[i] != ""; i++) {
       vector<CNetAddr> ips;
