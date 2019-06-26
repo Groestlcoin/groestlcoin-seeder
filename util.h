@@ -7,6 +7,9 @@
 #include <stdarg.h>
 
 #include "uint256.h"
+extern "C" {
+#include "sph_groestl.h"
+}
 
 #define loop                for (;;)
 #define BEGIN(a)            ((char*)&(a))
@@ -64,12 +67,17 @@ public:
 
 template<typename T1> inline uint256 Hash(const T1 pbegin, const T1 pend)
 {
-    static unsigned char pblank[1];
-    uint256 hash1;
-    SHA256((pbegin == pend ? pblank : (unsigned char*)&pbegin[0]), (pend - pbegin) * sizeof(pbegin[0]), (unsigned char*)&hash1);
-    uint256 hash2;
-    SHA256((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
-    return hash2;
+    sph_groestl512_context ctx;
+    static unsigned char pblank[1], hash1[64], hash2[64];
+    uint256 ret;
+    sph_groestl512_init(&ctx);
+    sph_groestl512(&ctx, (pbegin == pend ? pblank : (unsigned char*)&pbegin[0]), (pend - pbegin) * sizeof(pbegin[0]));
+    sph_groestl512_close(&ctx, hash1);
+    sph_groestl512_init(&ctx);
+    sph_groestl512(&ctx, hash1, 64);
+    sph_groestl512_close(&ctx, hash2);
+    memcpy(&ret, hash2, 32);
+    return ret;
 }
 
 void static inline Sleep(int nMilliSec) {
